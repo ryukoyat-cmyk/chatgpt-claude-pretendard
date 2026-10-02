@@ -1,21 +1,28 @@
-const URL_FONT = 'https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/woff2/PretendardVariable.woff2';
+const FONT_URL = 'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/notosanskr/NotoSansKR%5Bwght%5D.ttf';
+const CACHE_NAME = 'chatgpt-noto-sans-kr-v1';
 let pending;
 async function obtainFont() {
-  const saved = await chrome.storage.local.get('fontBase64');
-  if (saved.fontBase64) return saved.fontBase64;
-  const response = await fetch(URL_FONT, {signal: AbortSignal.timeout(20000)});
-  if (!response.ok) throw new Error('글꼴 다운로드 실패: ' + response.status);
+  const cache = await caches.open(CACHE_NAME);
+  let response = await cache.match(FONT_URL);
+  if (!response) {
+    response = await fetch(FONT_URL, {signal: AbortSignal.timeout(15000)});
+    if (!response.ok) throw new Error('글꼴 다운로드 실패');
+    const bytes = new Uint8Array(await response.clone().arrayBuffer());
+    if (bytes.length < 1000 || bytes.length > 16000000 || bytes[0] !== 0 || bytes[1] !== 1 || bytes[2] !== 0 || bytes[3] !== 0) throw new Error('잘못된 글꼴 파일');
+    await cache.put(FONT_URL, response.clone());
+  }
   const bytes = new Uint8Array(await response.arrayBuffer());
-  if (bytes.length > 6000000 || String.fromCharCode(...bytes.subarray(0,4)) !== 'wOF2') throw new Error('잘못된 글꼴 파일');
   let binary = '';
-  for (let i=0; i<bytes.length; i+=8192) binary += String.fromCharCode(...bytes.subarray(i,i+8192));
-  const fontBase64 = btoa(binary);
-  await chrome.storage.local.set({fontBase64});
-  return fontBase64;
+  for (let i = 0; i < bytes.length; i += 8192) binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
+  return btoa(binary);
 }
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
-  if (message.type !== 'getFont') return;
+  if (message.type !== 'getNotoFont') return;
   if (!pending) pending = obtainFont().finally(() => {pending = null;});
   pending.then(font => respond({font}), error => respond({error: error.message}));
   return true;
+});
+chrome.runtime.onInstalled.addListener(() => {
+  // Remove the obsolete font cache when upgrading from 1.0.x; keep settings.
+  chrome.storage.local.remove('fontBase64').catch(() => {});
 });
