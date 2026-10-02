@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ChatGPT & Claude Pretendard Auto",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "minimum_chrome_version": "114",
   "description": "ChatGPT와 Claude 전체에 Pretendard를 자동 적용하고 재시작 후에도 유지합니다.",
   "permissions": [

@@ -4,7 +4,9 @@ ChatGPT와 Claude 웹사이트 전체에 Pretendard를 자동 적용하는 Chrom
 
 ## 기능
 
-- 대화, 입력창, 메뉴, 코드 영역까지 Pretendard 적용
+- 대화, 입력창, 메뉴, 코드 영역의 일반 텍스트에 Pretendard 적용
+- 아이콘 전용 글꼴, SVG, 가상 요소의 원래 글꼴 보존
+- 알 수 없는 사용자 지정 글꼴은 아이콘일 가능성을 고려해 유지
 - 페이지 진입 시 자동 실행
 - 사용 여부와 글꼴 파일을 `chrome.storage.local`에 저장하여 브라우저 재시작 후 재사용
 - 켜기 / 끄기 및 글꼴 다운로드 재시도
@@ -22,6 +24,12 @@ ChatGPT와 Claude 웹사이트 전체에 Pretendard를 자동 적용하는 Chrom
 
 압축 해제한 폴더는 계속 보관해야 합니다. Chrome 114 이상을 대상으로 합니다.
 
+## 1.0.1 업데이트
+
+전체 요소와 가상 요소의 글꼴을 강제로 덮어쓰던 규칙을 제거했습니다. 일반 텍스트 요소만 선별하고 아이콘 글꼴을 보존합니다.
+
+기존 설치 폴더의 `extension/content.js`와 `extension/manifest.json`을 새 파일로 교체한 뒤 `chrome://extensions`에서 확장 프로그램의 새로고침 버튼을 누르고, ChatGPT / Claude 페이지도 새로고침하세요. GitHub 파일 변경은 기존 수동 설치에 자동 반영되지 않습니다.
+
 ## 문제 해결
 
 - **매니페스트를 로드할 수 없음:** 저장소 최상위 폴더가 아니라 `extension` 폴더를 선택했는지 확인합니다.
@@ -36,7 +44,7 @@ ChatGPT와 Claude 웹사이트 전체에 Pretendard를 자동 적용하는 Chrom
 
 ## 검증 범위
 
-JavaScript 문법 검사, 저장된 글꼴의 재사용, 저장된 비활성화 설정 복원, 켜기/끄기, MutationObserver의 반복 변경 방지를 모의 환경에서 검증했습니다. 실제 ChatGPT / Claude 화면과 Chrome 종료 후 재시작 검증은 아직 수행하지 않았습니다.
+JavaScript 문법 검사, 저장된 글꼴의 재사용, 저장된 비활성화 설정 복원, 켜기/끄기, MutationObserver의 반복 변경 방지를 모의 환경에서 검증했습니다. 1.0.1에서는 아이콘 전용 글꼴, 알 수 없는 ASCII 아이콘 글꼴, 숨김 아이콘, Private Use Area 글리프와 가상 요소 글꼴 보존 및 새 텍스트 적용을 모의 검증했습니다. 실제 ChatGPT / Claude 화면과 Chrome 종료 후 재시작 검증은 아직 수행하지 않았습니다.
 
 ## 글꼴 및 공식 자료
 
